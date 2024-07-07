@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ROTUR Dash</title>
+  <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+  <style>
+    body {
+      font-family: 'Poppins';
+      font-size: 22px;
+      background: rgb(63, 47, 60);
+      background: linear-gradient(90deg, rgba(63, 47, 60, 1) 0%, rgba(53, 59, 100, 1) 100%);
+      align-content: center;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .field-input {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1rem;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #ddd;
+      font-size: 20px;
+      border-radius: 10px;
+      width: 500px;
+    }
+
+    .field-input label {
+      padding: 10px;
+    }
+
+    .field-input input {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 20px;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0);
+    }
+
+    .field-input input:focus {
+      outline: none;
+    }
+
+    .field-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .field-button input {
+      background-color: rgba(0, 0, 0, 0.5);
+      width: 500px;
+      height: 40px;
+      border-radius: 10px;
+      color: #fff;
+      border: none;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 2rem;
+    }
+
+    .logo-image {
+      width: 300px;
+      height: 300px;
+      border-radius: 10%;
+      border-color: #111;
+      border-width: 3px;
+      border-style: solid;
+      padding: 10px;
+    }
+
+    .wrapper {
+      display: flex;
+      justify-content: center;
+      border-radius: 10px;
+      padding: 40px;
+      margin: 10px;
+    }
+
+    .login {
+      display: none;
+    }
+
+    .authenticating {
+      display: none;
+    }
+
+    .loading {
+      display: block;
+    }
+
+    .main {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .sidebar a {
+      padding: 15px;
+      margin: 5px 0;
+      text-decoration: none;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .sidebar a:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .chart {
+      width: 100%;
+      height: 300px;
+    }
+
+    .editable {
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      border-radius: 5px;
+      padding: 5px;
+      margin-right: 10px;
+    }
+
+    .readonly {
+      color: #999;
+    }
+
+    .key-value {
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .key-value button {
+      background-color: rgba(0, 0, 0, 0.2);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      right: auto;
+      position: relative;
+    }
+
+    .key-value input[type="text"] {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      margin-right: 10px;
+      padding: 5px;
+      border-radius: 5px;
+      width: fill-available;
+    }
+
+    .key-value input[type="text"]:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="loading"
+    style="display: flex; justify-content: center; align-items: center; font-size: 30px; color: #fff; margin-top: 2rem;">
+    Loading...
+  </div>
+  <div class="authenticating"
+    style="display: flex; justify-content: center; align-items: center; font-size: 30px; color: #fff; margin-top: 2rem;">
+    Authenticating...
+  </div>
+  <div class="login">
+    <div class="logo">
+      <img class="logo-image" src="https://avatars.githubusercontent.com/u/174211781?s=512&v=4" alt="logo">
+    </div>
+    <div class="wrapper">
+      <section class="form-login">
+        <header style="font-size: 30px; color: #999;">ROTUR Dash</header>
+        <form action="#">
+          <div class="field-input">
+            <label>Username</label><br>
+            <input type="text" name="username" placeholder="Enter your Username">
+          </div>
+          <div class="field-input">
+            <label>Password</label><br>
+            <input type="password" name="password" placeholder="Enter your password">
+            <i class="fas fa-eye"></i>
+          </div>
+          <div class="field-button">
+            <input type="submit" value="Continue to Dashboard">
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+  <div class="main" style="display: none;">
+    <div class="sidebar">
+      <a href="#" onclick="showSection('profile')">Profile</a>
+      <a href="#" class="users-link hidden" onclick="showSection('users')">Users</a>
+      <a href="#" onclick="showSection('stats')">Stats</a>
+    </div>
+    <div class="content">
+      <div id="profile" class="hidden">
+        <h2>Profile</h2>
+        <p>Here are the keys in your account:</p>
+        <div id="profile-keys"></div>
+        <button onclick="addKeyValuePair()">Add Key</button>
+      </div>
+      <div id="users" class="hidden">
+        <h2>Users</h2>
+        <ul id="user-list"></ul>
+      </div>
+      <div id="stats" class="hidden">
+        <h2>Server Statistics</h2>
+        <p>Users: <span id="stat-users"></span></p>
+        <p>Logins in past day: <span id="stat-logins"></span></p>
+        <p>Total requests today: <span id="stat-requests"></span></p>
+        <canvas id="request-chart" class="chart"></canvas>
+      </div>
+    </div>
+  </div>
+  <script>
+    if (!window.WebSocket) {
+      alert("Your browser does not support WebSockets. Please use a modern browser.");
+    }
+    let authscreen = document.querySelector('.authenticating');
+    let loginscreen = document.querySelector('.login');
+    let loading = document.querySelector('.loading');
+    let main = document.querySelector('.main');
+    let sidebarUsersLink = document.querySelector('.users-link');
+
+    let username_element = document.querySelector('input[name="username"]');
+    let password_element = document.querySelector('input[name="password"]');
+
+    let server = "";
+    let room = "[]";
+    let packets = {};
+    let client = {};
+
+    loading.style.display = 'block';
+    document.title = "Loading..."
+    fetch("https://raw.githubusercontent.com/Mistium/Origin-OS/main/Resources/info.json")
+      .then(response => response.json())
+      .then(data => {
+        room = JSON.stringify(data.rooms);
+        server = data.server;
+        authscreen.style.display = 'none';
+        loginscreen.style.display = 'block';
+        loading.style.display = 'none';
+        document.title = "Login - ROTUR Dash"
+      }
+      )
+
+    let token = "";
+    let username;
+    document.querySelector('form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      username = `dsh-${username_element.value}`;
+      authscreen.style.display = 'flex';
+      loginscreen.style.display = 'none';
+
+      let ws = new WebSocket(server);
+
+      ws.onopen = function () {
+        console.log("Connected!");
+        sendHandshake();
+      };
+
+      ws.onmessage = function (event) {
+        let packet = JSON.parse(event.data);
+        if (packet.cmd == "client_ip") {
+          client.ip = packet.val;
+        } else if (packet.cmd == "client_obj") {
+          client.username = packet.val.username;
+        } else if (packet.cmd == "ulist") {
+          if (packet.mode == "add") {
+            client.users.push(packet.val);
+          } else if (packet.mode == "remove") {
+            client.users = client.users.filter(user => user != packet.val);
+          } else if (packet.mode == "set") {
+            client.users = packet.val;
+          }
+          updateUsersList(client.users);
+        }
+        if (packet.cmd == "pmsg") {
+          if (packet.val.token) {
+            packet.token = packet.val.token;
+          }
+          if (packet.val.source_command) {
+            packet.source_command = packet.val.source_command;
+          }
+          packet.origin = packet.origin.username;
+          delete packet.rooms;
+          delete packet.cmd;
+          packet.client = packet.val.client;
+          packet.source = packet.val.source;
+          packet.payload = packet.val.payload;
+          if (!packets[packet.target]) {
+            packets[packet.val.target] = [];
+          }
+          packets[packet.val.target].push(packet);
+          delete packet.val;
+          if (packet.origin == "sys-origin.System") {
+            if (packet.payload === "Invalid Details") {
+              authscreen.style.display = 'none';
+              loginscreen.style.display = 'block';
+              alert("Invalid username or password. Please try again.");
+            } else if (typeof packet.payload === "object") {
+              document.title = "Dashboard - " + username_element.value;
+              if (packet.source_command == "login") {
+                token = packet.token;
+                delete packet.token;
+                askForStats();
+                authscreen.style.display = 'none';
+                main.style.display = 'flex';
+                console.log(packet.payload)
+                updateProfileKeys(packet.payload);
+                if (username_element.value.toLowerCase() === "mist") {
+                  sidebarUsersLink.classList.remove('hidden');
+                };
+              } else if (packet.source_command == "Stats") {
+                updateStats(packet.payload);
+              }
+            }
+          }
+        }
+        if (packet.listener == "handshake_cfg") {
+          setUsername(username);
+        }
+        if (packet.listener == "set_username_cfg") {
+          client.username = username;
+          linkRoom(["roturTW"]);
+        }
+        if (packet.listener == "link_cfg") {
+          client.room = packet.val;
+          login(username_element.value, CryptoJS.MD5(password_element.value).toString());
+        }
+      };
+
+      function sendHandshake() {
+        let msg = {
+          "cmd": "handshake",
+          "val": {
+            "language": "Javascript",
+            "version": {
+              "editorType": "Dashboard",
+              "versionNumber": null
+            }
+          },
+          "listener": "handshake_cfg"
+        };
+        ws.send(JSON.stringify(msg));
+      }
+
+      function setUsername(username) {
+        let msg = {
+          "cmd": "setid",
+          "val": username,
+          "listener": "set_username_cfg"
+        };
+        ws.send(JSON.stringify(msg));
+      }
+
+      function linkRoom(room) {
+        let msg = {
+          "cmd": "link",
+          "val": room,
+          "listener": "link_cfg"
+        };
+        ws.send(JSON.stringify(msg));
+      }
+
+      function replyToPacket(message, payload) {
+        let msg = {
+          "cmd": "pmsg",
+          "val": {
+            "target": message.source,
+            "payload": payload
+          },
+          "id": message.origin
+        };
+        ws.send(JSON.stringify(msg));
+      }
+
+      function sendMessage(payload, username, target, source, listener) {
+        let msg = {
+          "cmd": "pmsg",
+          "val": {
+            "target": target,
+            "payload": payload,
+            "source": source
+          },
+          "id": username,
+        };
+        if (listener) {
+          msg.listener = listener;
+        }
+        ws.send(JSON.stringify(msg));
+      }
+
+      function login(username, hashedPassword) {
+        let msg = {
+          "cmd": "pmsg",
+          "val": {
+            "command": "login",
+            "payload": [username, hashedPassword]
+          },
+          "id": "sys-origin.System"
+        };
+        ws.send(JSON.stringify(msg));
+      }
+
+      function askForStats() {
+        let msg = {
+          "cmd": "pmsg",
+          "val": {
+            "id": token,
+            "command": "Stats",
+            "payload": "stats"
+          },
+          "id": "sys-origin.System"
+        };
+        ws.send(JSON.stringify(msg));
+      }
+
+      function updateProfileKeys(keys) {
+        let profileKeysElement = document.getElementById('profile-keys');
+        profileKeysElement.innerHTML = '';
+        for (let key in keys) {
+          if (keys.hasOwnProperty(key)) {
+            let keyValueElement = document.createElement('div');
+            keyValueElement.className = 'key-value';
+
+            let keyElement = document.createElement('span');
+            keyElement.innerText = key + ': ';
+            keyValueElement.appendChild(keyElement);
+
+            let valueElement = document.createElement('input');
+            valueElement.type = 'text';
+            valueElement.value = keys[key];
+            valueElement.className = 'editable';
+            valueElement.classList.add('readonly');
+            valueElement.disabled = true;
+            keyValueElement.appendChild(valueElement);
+
+            profileKeysElement.appendChild(keyValueElement);
+          }
+        }
+      }
+
+      function updateUsersList(users) {
+        let userListElement = document.getElementById('user-list');
+        userListElement.innerHTML = users.map(user => `<li>${user.username}</li>`).join('');
+      }
+
+      function updateStats(stats) {
+        document.getElementById('stat-users').innerText = stats.users;
+        document.getElementById('stat-logins').innerText = stats.logins;
+        document.getElementById('stat-requests').innerText = stats.requests[0];
+
+        let ctx = document.getElementById('request-chart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: stats.requests.map(stat => stat.day),
+            datasets: [{
+              label: 'Requests',
+              data: stats.requests.map(stat => stat.requests),
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 2,
+              fill: false
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      }
+    });
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.content > div').forEach(section => section.classList.add('hidden'));
+      document.getElementById(sectionId).classList.remove('hidden');
+    }
+  </script>
+</body>
+
+</html>
