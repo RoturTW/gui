@@ -336,7 +336,7 @@
           }
           packets[packet.val.target].push(packet);
           delete packet.val;
-          if (packet.origin == "sys-origin.System") {
+          if (packet.origin == "sys-rotur") {
             if (packet.payload === "Invalid Details") {
               authscreen.style.display = 'none';
               loginscreen.style.display = 'block';
@@ -441,7 +441,7 @@
             "command": "login",
             "payload": [username, hashedPassword]
           },
-          "id": "sys-origin.System"
+          "id": "sys-rotur"
         };
         ws.send(JSON.stringify(msg));
       }
@@ -454,7 +454,7 @@
             "command": "Stats",
             "payload": "stats"
           },
-          "id": "sys-origin.System"
+          "id": "sys-rotur"
         };
         ws.send(JSON.stringify(msg));
       }
